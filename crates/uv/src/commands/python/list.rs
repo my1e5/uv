@@ -211,6 +211,33 @@ pub(crate) async fn list(
                     }
                 }
             }
+        } else {
+            // For System installations, we still need to track them in seen_patch
+            // to prevent showing downloads for versions that are installed.
+            // However, we don't deduplicate System installations against each other.
+            if let [major, minor, ..] = *key.version().release() {
+                seen_minor.insert((
+                    all_platforms.then_some(*key.os()),
+                    major,
+                    minor,
+                    key.variant(),
+                    key.implementation(),
+                    all_arches.then_some(*key.arch()),
+                    *key.libc(),
+                ));
+            }
+            if let [major, minor, patch] = *key.version().release() {
+                seen_patch.insert((
+                    all_platforms.then_some(*key.os()),
+                    major,
+                    minor,
+                    patch,
+                    key.variant(),
+                    key.implementation(),
+                    all_arches.then_some(*key.arch()),
+                    key.libc(),
+                ));
+            }
         }
         include.push((key, uri));
     }
