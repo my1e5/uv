@@ -185,8 +185,8 @@ pub(crate) async fn list(
                     all_platforms.then_some(*key.os()),
                     major,
                     minor,
-                    key.variant(),
-                    key.implementation(),
+                    *key.variant(),
+                    key.implementation().into_owned(),
                     all_arches.then_some(*key.arch()),
                     *key.libc(),
                 )) {
@@ -201,10 +201,10 @@ pub(crate) async fn list(
                     major,
                     minor,
                     patch,
-                    key.variant(),
-                    key.implementation(),
+                    *key.variant(),
+                    key.implementation().into_owned(),
                     all_arches.then_some(*key.arch()),
-                    key.libc(),
+                    *key.libc(),
                 )) {
                     if matches!(kind, Kind::Download) {
                         continue;
