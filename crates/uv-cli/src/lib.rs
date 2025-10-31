@@ -3918,6 +3918,14 @@ pub struct AddArgs {
     #[arg(long)]
     pub extra: Option<Vec<ExtraName>>,
 
+    /// Mark the index as explicit.
+    ///
+    /// Explicit indexes will only be used for packages that explicitly specify them via
+    /// a `[tool.uv.sources]` definition. This prevents the index from being used for
+    /// all packages, which can help avoid dependency confusion when using custom indexes.
+    #[arg(long)]
+    pub explicit_index: bool,
+
     /// Avoid syncing the virtual environment.
     #[arg(long, env = EnvVars::UV_NO_SYNC, value_parser = clap::builder::BoolishValueParser::new(), conflicts_with = "frozen")]
     pub no_sync: bool,

@@ -2073,6 +2073,7 @@ async fn run_project(
                 args.raw,
                 args.bounds,
                 args.indexes,
+                args.explicit_index,
                 args.rev,
                 args.tag,
                 args.branch,
