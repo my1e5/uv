@@ -526,6 +526,9 @@ impl PyProjectTomlMut {
                 }
                 table.insert("explicit", Value::Boolean(formatted).into());
             }
+        } else {
+            // Remove the explicit field if it exists and is not needed
+            table.remove("explicit");
         }
 
         // Remove any replaced tables.
