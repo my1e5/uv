@@ -9796,6 +9796,61 @@ fn add_index() -> Result<()> {
     Ok(())
 }
 
+/// Add an index with the explicit flag.
+#[test]
+fn add_explicit_index() -> Result<()> {
+    let context = TestContext::new("3.12").with_exclude_newer("2025-01-30T00:00Z");
+
+    let pyproject_toml = context.temp_dir.child("pyproject.toml");
+    pyproject_toml.write_str(indoc! {r#"
+        [project]
+        name = "project"
+        version = "0.1.0"
+        requires-python = ">=3.12"
+        dependencies = []
+    "#})?;
+
+    uv_snapshot!(context.filters(), context.add().arg("iniconfig==2.0.0").arg("--index").arg("pytorch=https://pypi.org/simple").arg("--explicit-index"), @r###"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+
+    ----- stderr -----
+    Resolved 2 packages in [TIME]
+    Prepared 1 package in [TIME]
+    Installed 1 package in [TIME]
+     + iniconfig==2.0.0
+    "###);
+
+    let pyproject_toml = fs_err::read_to_string(context.temp_dir.join("pyproject.toml"))?;
+
+    insta::with_settings!({
+        filters => context.filters(),
+    }, {
+        assert_snapshot!(
+            pyproject_toml, @r###"
+        [project]
+        name = "project"
+        version = "0.1.0"
+        requires-python = ">=3.12"
+        dependencies = [
+            "iniconfig==2.0.0",
+        ]
+
+        [tool.uv.sources]
+        iniconfig = { index = "pytorch" }
+
+        [[tool.uv.index]]
+        name = "pytorch"
+        url = "https://pypi.org/simple"
+        explicit = true
+        "###
+        );
+    });
+
+    Ok(())
+}
+
 /// Add an index provided via `--default-index`.
 #[test]
 fn add_default_index_url() -> Result<()> {

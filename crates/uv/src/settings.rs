@@ -1531,6 +1531,7 @@ pub(crate) struct AddSettings {
     pub(crate) install_mirrors: PythonInstallMirrors,
     pub(crate) refresh: Refresh,
     pub(crate) indexes: Vec<Index>,
+    pub(crate) explicit_index: bool,
     pub(crate) settings: ResolverInstallerSettings,
 }
 
@@ -1553,6 +1554,7 @@ impl AddSettings {
             editable,
             no_editable,
             extra,
+            explicit_index,
             raw,
             bounds,
             rev,
@@ -1686,6 +1688,7 @@ impl AddSettings {
             extras: extra.unwrap_or_default(),
             refresh: Refresh::from(refresh),
             indexes,
+            explicit_index,
             settings: ResolverInstallerSettings::combine(
                 resolver_installer_options(installer, build),
                 filesystem,
