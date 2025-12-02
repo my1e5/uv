@@ -508,6 +508,29 @@ impl PyProjectTomlMut {
             }
         }
 
+        // If necessary, update the explicit.
+        if index.explicit {
+            if !table
+                .get("explicit")
+                .and_then(Item::as_bool)
+                .is_some_and(|explicit| explicit)
+            {
+                let mut formatted = Formatted::new(true);
+                if let Some(value) = table.get("explicit").and_then(Item::as_value) {
+                    if let Some(prefix) = value.decor().prefix() {
+                        formatted.decor_mut().set_prefix(prefix.clone());
+                    }
+                    if let Some(suffix) = value.decor().suffix() {
+                        formatted.decor_mut().set_suffix(suffix.clone());
+                    }
+                }
+                table.insert("explicit", Value::Boolean(formatted).into());
+            }
+        } else {
+            // Remove the explicit field if it exists and is not needed
+            table.remove("explicit");
+        }
+
         // Remove any replaced tables.
         existing.retain(|table| {
             // If the index has the same name, skip it.

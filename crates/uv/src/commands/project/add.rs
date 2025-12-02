@@ -82,6 +82,7 @@ pub(crate) async fn add(
     raw: bool,
     bounds: Option<AddBoundsKind>,
     indexes: Vec<Index>,
+    explicit_index: bool,
     rev: Option<String>,
     tag: Option<String>,
     branch: Option<String>,
@@ -689,7 +690,12 @@ pub(crate) async fn add(
         let mut indexes = urls.defined_indexes().collect::<Vec<_>>();
         indexes.reverse();
         for index in indexes {
-            toml.add_index(index)?;
+            let mut index = index.clone();
+            // Apply the explicit flag if provided
+            if explicit_index {
+                index.explicit = true;
+            }
+            toml.add_index(&index)?;
         }
     }
 
